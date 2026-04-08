@@ -1,18 +1,19 @@
 #include "stm32f10x.h"                  // Device header
 #include "WS2812.h"
 #include "Delay.h"
-#include "Random.h"
 #include "RGB_2_HSV.h"
 
 #define Code0       2
 #define Code1       6
 #define CodeReset   0
 
+/*	WS2812灯带 8×8
 
+*/
 uint16_t Color_Array[LED_Count][24] = {0};
  
  
-void PWM_DMA_WS2812_Init(void)
+void PWM_DMA_WS2812_Init(void)	//初始化
 {
     /*开启时钟*/
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);			
@@ -97,7 +98,7 @@ void WS2812_Update(void)
 	
 }
  
-/*指定灯的颜色(n从1开始)：对应操作就是赋值缓冲数组*/
+/*指定哪个灯的颜色(n从1开始)：对应操作就是赋值缓冲数组*/
 void WS2812_SetColor(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
 {
     static uint8_t i,j,temp[3];
@@ -191,6 +192,7 @@ void WS2812_WaterFlow1(uint8_t Light_num)
 //    WS2812_Update();
 //    Delay_ms(40);
 }
+
 //流水灯2：循环渐变
 void WS2812_WaterFlow2(uint8_t Light_num)
 {
@@ -206,6 +208,7 @@ void WS2812_WaterFlow2(uint8_t Light_num)
 			Delay_ms(50);
 		}
 }
+
 //给数组填充颜色
 static uint8_t Colors_Cycle[64][3] = {0};
 void Fill_Color(void)
@@ -304,6 +307,7 @@ void WS2812_AllLight(uint8_t speed)
 	}
 */
 
+//呼吸灯数组
 const uint8_t v_breath[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 
                                4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 12, 12, 
                                13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 20, 20, 21, 22, 23, 24, 25, 25, 26, 27, 28, 30, 31, 32, 33, 
@@ -315,7 +319,8 @@ const uint8_t v_breath[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2
                                20, 19, 18, 18, 17, 16, 16, 15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 10, 9, 9, 9, 8, 8, 8, 7, 7, 7, 7, 6, 
                                6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
                                2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-//呼吸灯
+                               
+//呼吸灯，number：选择哪个灯
 void WS2812_Breath(uint8_t number)
 {
 	static uint8_t r=0, g=0, b=0;
@@ -323,14 +328,14 @@ void WS2812_Breath(uint8_t number)
 	static uint8_t num = 0;
 	if(num == 0) num = number;
 	static uint16_t h=0;
-	static float s=1,v_temp = 1;
+	static float s=1, v_temp = 1;
 	static uint16_t index = 0;
 	v_temp = v_breath[index] * 0.00392f;  // 1 / 255 = 0.00392
 	index++;
-	if(index >=300)
+	if(index >= 300)
 	{
 		index = 0;
-		h = (h + 10) % 360;
+		h = (h + 10) % 360;		//颜色变化
 		num++;
 	}
 	HSV_to_RGB(h, s, v_temp, &r, &g, &b);
