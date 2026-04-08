@@ -1,3 +1,7 @@
+# 忽略文件
 README.md
 My.stm32.rar
+STM32基础工程.rar
+
+# 忽略整个文件夹
 My stm32/
